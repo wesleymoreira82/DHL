@@ -1,50 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rastreio DHL</title>
-    <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Redirecionador</title>
+    <title>Rastreio DHL</title>
     <style>
         body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f4f4f9; }
         .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
-        input { padding: 10px; width: 200px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px; }
-        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        input { padding: 10px; width: 200px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px; font-size: 16px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         button:hover { background: #0056b3; }
     </style>
 </head>
 <body>
+
     <div class="card">
-        <h3>Informe o código:</h3>
-        <input type="text" id="info" placeholder="Informe o código aqui" onkeypress="handleKeyPress(event)">
+        <h3>Rastreio DHL</h3>
+        <p>Informe o código abaixo:</p>
+        <input type="text" id="info" placeholder="Ex: 123456" onkeypress="handleKeyPress(event)">
         <br>
-        <button onclick="redirecionar()">Rastrear</button>
+        <button onclick="redirecionar()">Rastrear em nova aba</button>
     </div>
 
     <script>
         function redirecionar() {
             const valor = document.getElementById('info').value;
             if (valor) {
-                // ALTERE A URL ABAIXO: Mantenha o ${valor} onde a informação deve entrar
+                // Monta a URL da DHL com o seu código personalizado
                 const urlFinal = `https://mysctrackandtrace.dhl.com/order/public/detail?id=55002009OMS%2F${valor}-CID271068-BR_5111&indexType=CURRENT&country=BR&activeTab=orderHistory`;
-                window.location.href = urlFinal;
+                
+                // ABRE EM NOVA ABA
+                window.open(urlFinal, '_blank');
+
+                // LIMPA O CAMPO para a próxima consulta
+                document.getElementById('info').value = '';
+            } else {
+                alert("Por favor, digite um código.");
             }
         }
 
+        // Permite usar a tecla ENTER para facilitar
         function handleKeyPress(e) {
             if (e.key === 'Enter') redirecionar();
         }
     </script>
-</body>
-</html>
 
-</head>
-<body>
-    
 </body>
 </html>
