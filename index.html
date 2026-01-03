@@ -3,57 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rastreio DHL</title>
+    <title>Rastreio & NF - DHL</title>
     
-    <!-- ÍCONE EM PNG (Mais compatível com todos os navegadores) -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 
     <style>
         body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f4f4f9; }
-        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
-        input { padding: 10px; width: 200px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px; font-size: 16px; }
-        button { padding: 10px 20px; background: #d40511; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        button:hover { background: #990000; }
+        .card { background: white; padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; width: 300px; }
+        h3 { color: #d40511; margin-top: 0; }
+        input { padding: 12px; width: 90%; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 15px; font-size: 16px; outline: none; }
+        input:focus { border-color: #d40511; }
+        
+        .btn-group { display: flex; flex-direction: column; gap: 10px; }
+        button { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 14px; }
+        
+        .btn-rastreio { background: #d40511; color: white; }
+        .btn-rastreio:hover { background: #990000; }
+        
+        .btn-nf { background: #007bff; color: white; }
+        .btn-nf:hover { background: #0056b3; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h3>Rastreio DHL</h3>
-        <p>Informe o código abaixo:</p>
-        <input type="text" id="info" placeholder="Ex: 123456" onkeypress="handleKeyPress(event)">
-        <br>
-        <button onclick="redirecionar()">Rastrear</button>
+        <h3>Gestão de Pedidos</h3>
+        <p>Insira o número abaixo:</p>
+        <input type="text" id="info" placeholder="Bling ou NF" onkeypress="handleKeyPress(event)">
+        
+        <div class="btn-group">
+            <button class="btn-rastreio" onclick="redirecionarRastreio()">Rastrear Pedido (DHL)</button>
+            <button class="btn-nf" onclick="buscarNF()">Buscar Nota Fiscal (Drive)</button>
+        </div>
     </div>
 
     <script>
-        function redirecionar() {
-            const valor = document.getElementById('info').value;
+        function redirecionarRastreio() {
+            const valor = document.getElementById('info').value.trim();
             if (valor) {
-                // Monta a URL da DHL com o seu código personalizado
                 const urlFinal = `https://mysctrackandtrace.dhl.com/order/public/detail?id=55002009OMS%2F${valor}-CID271068-BR_5111&indexType=CURRENT&country=BR&activeTab=orderHistory`;
-                
-                // ABRE EM NOVA ABA
                 window.open(urlFinal, '_blank');
-
-                // LIMPA O CAMPO para a próxima consulta
-                document.getElementById('info').value = '';
+                limparCampo();
             } else {
-                alert("Por favor, digite um código.");
+                alert("Por favor, digite o código de rastreio.");
             }
         }
 
-        // Permite usar a tecla ENTER para facilitar
+        function buscarNF() {
+            const valor = document.getElementById('info').value.trim();
+            if (valor) {
+                // Monta a URL de busca no Google Drive conforme solicitado
+                const urlNF = `https://drive.google.com/drive/search?q=${valor}`;
+                window.open(urlNF, '_blank');
+                limparCampo();
+            } else {
+                alert("Por favor, digite o número da Nota Fiscal.");
+            }
+        }
+
+        function limparCampo() {
+            document.getElementById('info').value = '';
+        }
+
         function handleKeyPress(e) {
-            if (e.key === 'Enter') redirecionar();
+            // Se apertar Enter, ele executa o rastreio por padrão
+            if (e.key === 'Enter') redirecionarRastreio();
         }
     </script>
 
 </body>
 </html>
-
-
-
-
-
-
