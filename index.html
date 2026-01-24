@@ -15,13 +15,14 @@
         input:focus { border-color: #d40511; }
         
         .btn-group { display: flex; flex-direction: column; gap: 10px; }
-        button { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 14px; }
+        button { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 15px; width: 100%; }
         
-        .btn-rastreio { background: #d40511; color: white; }
-        .btn-rastreio:hover { background: #990000; }
-        
-        .btn-nf { background: #007bff; color: white; }
-        .btn-nf:hover { background: #0056b3; }
+        /* Criei um estilo único unindo as cores ou mantendo o destaque */
+        .btn-master { 
+            background: linear-gradient(90deg, #007bff 0%, #d40511 100%); 
+            color: white; 
+        }
+        .btn-master:hover { opacity: 0.9; }
     </style>
 </head>
 <body>
@@ -32,32 +33,29 @@
         <input type="text" id="info" placeholder="Bling ou NF" onkeypress="handleKeyPress(event)">
         
         <div class="btn-group">
-            <button class="btn-rastreio" onclick="redirecionarRastreio()">Rastrear Pedido (DHL)</button>
-            <button class="btn-nf" onclick="buscarNF()">Buscar Nota Fiscal (Drive)</button>
+            <button class="btn-master" onclick="pesquisarTudo()">Rastrear + Buscar Drive</button>
         </div>
     </div>
 
     <script>
-        function redirecionarRastreio() {
+        function pesquisarTudo() {
             const valor = document.getElementById('info').value.trim();
+            
             if (valor) {
-                const urlFinal = `https://mysctrackandtrace.dhl.com/order/public/detail?id=55002009OMS%2F${valor}-CID271068-BR_5111&indexType=CURRENT&country=BR&activeTab=orderHistory`;
-                window.open(urlFinal, '_blank');
-                limparCampo();
-            } else {
-                alert("Por favor, digite o código de rastreio.");
-            }
-        }
-
-        function buscarNF() {
-            const valor = document.getElementById('info').value.trim();
-            if (valor) {
-                // Monta a URL de busca no Google Drive conforme solicitado
+                // 1. Define as URLs
                 const urlNF = `https://drive.google.com/drive/search?q=${valor}`;
+                const urlRastreio = `https://mysctrackandtrace.dhl.com/order/public/detail?id=55002009OMS%2F${valor}-CID271068-BR_5111&indexType=CURRENT&country=BR&activeTab=orderHistory`;
+
+                // 2. Abre a primeira aba (Drive)
                 window.open(urlNF, '_blank');
+
+                // 3. Abre a segunda aba (Rastreio)
+                // O navegador foca automaticamente na última aba aberta, então o rastreio ficará visível
+                window.open(urlRastreio, '_blank');
+
                 limparCampo();
             } else {
-                alert("Por favor, digite o número da Nota Fiscal.");
+                alert("Por favor, digite o código do pedido.");
             }
         }
 
@@ -66,8 +64,8 @@
         }
 
         function handleKeyPress(e) {
-            // Se apertar Enter, ele executa o rastreio por padrão
-            if (e.key === 'Enter') redirecionarRastreio();
+            // Se apertar Enter, executa a função unificada
+            if (e.key === 'Enter') pesquisarTudo();
         }
     </script>
 
