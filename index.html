@@ -3,69 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rastreio & NF - DHL</title>
+    <title>Painel de Rastreio & Enviando</title>
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f4f4f9; }
-        .card { background: white; padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; width: 300px; }
-        h3 { color: #d40511; margin-top: 0; }
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #f4f4f9; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; width: 320px; }
+        
+        h3 { color: #d40511; margin-top: 0; margin-bottom: 15px; }
+        
+        label { display: block; text-align: left; font-size: 14px; color: #555; margin-bottom: 5px; font-weight: bold; }
+        
         input { padding: 12px; width: 90%; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 15px; font-size: 16px; outline: none; }
         input:focus { border-color: #d40511; }
         
-        .btn-group { display: flex; flex-direction: column; gap: 10px; }
-        button { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 15px; width: 100%; }
+        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
         
-        /* Criei um estilo único unindo as cores ou mantendo o destaque */
+        button { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 15px; width: 100%; color: white; }
+        button:hover { opacity: 0.9; }
+
+        /* Botão Original (DHL/Drive) */
         .btn-master { 
             background: linear-gradient(90deg, #007bff 0%, #d40511 100%); 
-            color: white; 
         }
-        .btn-master:hover { opacity: 0.9; }
+
+        /* Botão Novo (Enviando) */
+        .btn-enviando {
+            background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        hr { border: 0; border-top: 1px solid #eee; margin: 10px 0 20px 0; }
     </style>
 </head>
 <body>
 
     <div class="card">
         <h3>Gestão de Pedidos</h3>
-        <p>Insira o número abaixo:</p>
-        <input type="text" id="info" placeholder="Bling ou NF" onkeypress="handleKeyPress(event)">
+
+        <label>Pedido ou NF:</label>
+        <input type="text" id="info" placeholder="Ex: 12345" onkeypress="handleKeyPress(event, 'pedido')">
         
         <div class="btn-group">
             <button class="btn-master" onclick="pesquisarTudo()">Rastrear + Buscar Drive</button>
         </div>
+
+        <hr>
+
+        <label>Consultar CPF (Enviando):</label>
+        <input type="text" id="cpfInfo" placeholder="Apenas números" onkeypress="handleKeyPress(event, 'cpf')">
+
+        <div class="btn-group" style="margin-bottom: 0;">
+            <button class="btn-enviando" onclick="pesquisarEnviando()">Buscar no Enviando</button>
+        </div>
     </div>
 
     <script>
+        // --- FUNÇÃO 1: Rastreio DHL + Drive ---
         function pesquisarTudo() {
             const valor = document.getElementById('info').value.trim();
             
             if (valor) {
-                // 1. Define as URLs
                 const urlNF = `https://drive.google.com/drive/search?q=${valor}`;
                 const urlRastreio = `https://mysctrackandtrace.dhl.com/order/public/detail?id=55002009OMS%2F${valor}-CID271068-BR_5111&indexType=CURRENT&country=BR&activeTab=orderHistory`;
 
-                // 2. Abre a primeira aba (Drive)
                 window.open(urlNF, '_blank');
-
-                // 3. Abre a segunda aba (Rastreio)
-                // O navegador foca automaticamente na última aba aberta, então o rastreio ficará visível
                 window.open(urlRastreio, '_blank');
 
-                limparCampo();
+                document.getElementById('info').value = ''; // Limpa o campo
             } else {
                 alert("Por favor, digite o código do pedido.");
             }
         }
 
-        function limparCampo() {
-            document.getElementById('info').value = '';
+        // --- FUNÇÃO 2: Busca no Enviando (CPF) ---
+        function pesquisarEnviando() {
+            let cpf = document.getElementById('cpfInfo').value.trim();
+
+            if (cpf) {
+                // Remove pontos e traços caso o usuário digite (ex: 123.456.789-00 vira 12345678900)
+                // Se o sistema do Enviando aceitar pontuação, pode remover a linha abaixo.
+                cpf = cpf.replace(/\D/g, ''); 
+
+                // URL fornecida com o CPF inserido
+                const urlEnviando = `https://hesed.enviando.nordware.io/orders/search/?order=&order_source_number=&invoice_number=&order_status_alt=&order_priority=&account=&store=&shipping_type_id=&order_date_gte=&order_date_lte=&integrated_at_gte=&integrated_at_lte=&invoice_authorized_at_gte=&invoice_authorized_at_lte=&send_to_separate_gte=&send_to_separate_lte=&dispatch_at_gte=&dispatch_at_lte=&tracking_code=&shipping_name=&client_document=${cpf}&postal_code=&item_code=&item_gtin=&item_serial=&batch=`;
+
+                window.open(urlEnviando, '_blank');
+                
+                document.getElementById('cpfInfo').value = ''; // Limpa o campo
+            } else {
+                alert("Por favor, digite o CPF do cliente.");
+            }
         }
 
-        function handleKeyPress(e) {
-            // Se apertar Enter, executa a função unificada
-            if (e.key === 'Enter') pesquisarTudo();
+        // --- CONTROLE DE TECLA ENTER ---
+        function handleKeyPress(e, tipo) {
+            if (e.key === 'Enter') {
+                if (tipo === 'pedido') {
+                    pesquisarTudo();
+                } else if (tipo === 'cpf') {
+                    pesquisarEnviando();
+                }
+            }
         }
     </script>
 
