@@ -33,6 +33,12 @@
             background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
         }
 
+        /* Botão Power BI */
+        .btn-powerbi {
+            background: linear-gradient(90deg, #F2C811 0%, #D49000 100%);
+            color: #333; /* Texto escuro para contrastar com o amarelo */
+        }
+
         hr { border: 0; border-top: 1px solid #eee; margin: 10px 0 20px 0; }
     </style>
 </head>
@@ -56,6 +62,15 @@
         <div class="btn-group" style="margin-bottom: 0;">
             <button class="btn-enviando" onclick="pesquisarEnviando()">Buscar no Enviando</button>
         </div>
+
+        <hr>
+
+        <label>Power BI (Planilha):</label>
+        <input type="text" id="pbiInfo" placeholder="Digite o número" onkeypress="handleKeyPress(event, 'powerbi')">
+
+        <div class="btn-group" style="margin-bottom: 0;">
+            <button class="btn-powerbi" onclick="pesquisarPowerBI()">Buscar na Planilha</button>
+        </div>
     </div>
 
     <script>
@@ -70,7 +85,7 @@
                 window.open(urlNF, '_blank');
                 window.open(urlRastreio, '_blank');
 
-                document.getElementById('info').value = ''; // Limpa o campo
+                document.getElementById('info').value = ''; 
             } else {
                 alert("Por favor, digite o código do pedido.");
             }
@@ -81,18 +96,38 @@
             let cpf = document.getElementById('cpfInfo').value.trim();
 
             if (cpf) {
-                // Remove pontos e traços caso o usuário digite (ex: 123.456.789-00 vira 12345678900)
-                // Se o sistema do Enviando aceitar pontuação, pode remover a linha abaixo.
                 cpf = cpf.replace(/\D/g, ''); 
 
-                // URL fornecida com o CPF inserido
                 const urlEnviando = `https://hesed.enviando.nordware.io/orders/search/?order=&order_source_number=&invoice_number=&order_status_alt=&order_priority=&account=&store=&shipping_type_id=&order_date_gte=&order_date_lte=&integrated_at_gte=&integrated_at_lte=&invoice_authorized_at_gte=&invoice_authorized_at_lte=&send_to_separate_gte=&send_to_separate_lte=&dispatch_at_gte=&dispatch_at_lte=&tracking_code=&shipping_name=&client_document=${cpf}&postal_code=&item_code=&item_gtin=&item_serial=&batch=`;
 
                 window.open(urlEnviando, '_blank');
                 
-                document.getElementById('cpfInfo').value = ''; // Limpa o campo
+                document.getElementById('cpfInfo').value = ''; 
             } else {
                 alert("Por favor, digite o CPF do cliente.");
+            }
+        }
+
+        // --- FUNÇÃO 3: Busca no Power BI (Google Sheets) ---
+        function pesquisarPowerBI() {
+            const valor = document.getElementById('pbiInfo').value.trim();
+
+            if (valor) {
+                // ATENÇÃO: Substitua o link abaixo pelo link real da sua planilha do Google Sheets.
+                // Como o Google Sheets não tem busca nativa por URL, ele abrirá a planilha 
+                // e o usuário pode apertar Ctrl+F (ou Cmd+F) para colar o número.
+                
+                const urlPlanilha = `https://docs.google.com/spreadsheets/d/COLOQUE_AQUI_O_ID_DA_SUA_PLANILHA/edit`;
+
+                // Copia o valor para a área de transferência para facilitar o Ctrl+F
+                navigator.clipboard.writeText(valor).then(() => {
+                    alert(`Número ${valor} copiado! Ao abrir a planilha, aperte Ctrl+F e cole para achar a linha.`);
+                });
+
+                window.open(urlPlanilha, '_blank');
+                document.getElementById('pbiInfo').value = ''; 
+            } else {
+                alert("Por favor, digite o número para buscar no Power BI/Planilha.");
             }
         }
 
@@ -103,6 +138,8 @@
                     pesquisarTudo();
                 } else if (tipo === 'cpf') {
                     pesquisarEnviando();
+                } else if (tipo === 'powerbi') {
+                    pesquisarPowerBI(); // Aciona a nova função
                 }
             }
         }
