@@ -23,6 +23,13 @@
         button { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 15px; width: 100%; color: white; }
         button:hover { opacity: 0.9; }
 
+        /* NOVO BOTÃO: Rastreio Instituto Hesed (Marrom para Creme/Bege) */
+        .btn-hesed {
+            background: linear-gradient(90deg, #6F4E37 0%, #E6C280 100%);
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.4); /* Sombra para o texto ler bem no lado claro */
+        }
+
         /* Botão Original (DHL/Drive) */
         .btn-master { 
             background: linear-gradient(90deg, #007bff 0%, #d40511 100%); 
@@ -46,6 +53,15 @@
 
     <div class="card">
         <h3>Gestão de Pedidos</h3>
+
+        <label>Consultar Pedido (Hesed):</label>
+        <input type="text" id="pedidoHesed" placeholder="Ex: 12345" onkeypress="handleKeyPress(event, 'hesed')">
+        
+        <div class="btn-group">
+            <button class="btn-hesed" onclick="pesquisarHesed()">Rastrear Pedido</button>
+        </div>
+
+        <hr>
 
         <label>Pedido ou NF:</label>
         <input type="text" id="info" placeholder="Ex: 12345" onkeypress="handleKeyPress(event, 'pedido')">
@@ -74,6 +90,19 @@
     </div>
 
     <script>
+        // --- FUNÇÃO NOVA: Rastreio Instituto Hesed ---
+        function pesquisarHesed() {
+            const valor = document.getElementById('pedidoHesed').value.trim();
+            
+            if (valor) {
+                const urlHesed = `https://rastreio.institutohesed.org.br/rastreio/${valor}`;
+                window.open(urlHesed, '_blank');
+                document.getElementById('pedidoHesed').value = ''; 
+            } else {
+                alert("Por favor, digite o número do pedido.");
+            }
+        }
+
         // --- FUNÇÃO 1: Rastreio DHL + Drive ---
         function pesquisarTudo() {
             const valor = document.getElementById('info').value.trim();
@@ -87,7 +116,7 @@
 
                 document.getElementById('info').value = ''; 
             } else {
-                alert("Por favor, digite o código do pedido.");
+                alert("Por favor, digite o código do pedido (DHL/NF).");
             }
         }
 
@@ -113,13 +142,8 @@
             const valor = document.getElementById('pbiInfo').value.trim();
 
             if (valor) {
-                // ATENÇÃO: Substitua o link abaixo pelo link real da sua planilha do Google Sheets.
-                // Como o Google Sheets não tem busca nativa por URL, ele abrirá a planilha 
-                // e o usuário pode apertar Ctrl+F (ou Cmd+F) para colar o número.
-                
                 const urlPlanilha = `https://docs.google.com/spreadsheets/d/1liP1pYvB4BsZ-J_DXnIWLHMOPeZ6jx24f_DjR7mking/edit?gid=1407160955#gid=1407160955`;
 
-                // Copia o valor para a área de transferência para facilitar o Ctrl+F
                 navigator.clipboard.writeText(valor).then(() => {
                     alert(`Número ${valor} copiado! Ao abrir a planilha, aperte Ctrl+F e cole para achar a linha.`);
                 });
@@ -134,12 +158,14 @@
         // --- CONTROLE DE TECLA ENTER ---
         function handleKeyPress(e, tipo) {
             if (e.key === 'Enter') {
-                if (tipo === 'pedido') {
+                if (tipo === 'hesed') {
+                    pesquisarHesed(); // Aciona a busca do Hesed
+                } else if (tipo === 'pedido') {
                     pesquisarTudo();
                 } else if (tipo === 'cpf') {
                     pesquisarEnviando();
                 } else if (tipo === 'powerbi') {
-                    pesquisarPowerBI(); // Aciona a nova função
+                    pesquisarPowerBI(); 
                 }
             }
         }
