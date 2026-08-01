@@ -23,27 +23,27 @@
         button { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 15px; width: 100%; color: white; }
         button:hover { opacity: 0.9; }
 
-        /* NOVO BOTÃO: Rastreio Instituto Hesed (Marrom para Creme/Bege) */
+        /* Botão: Rastreio Instituto Hesed */
         .btn-hesed {
             background: linear-gradient(90deg, #6F4E37 0%, #E6C280 100%);
             color: #fff;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.4); /* Sombra para o texto ler bem no lado claro */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
         }
 
-        /* Botão Original (DHL/Drive) */
-        .btn-master { 
-            background: linear-gradient(90deg, #007bff 0%, #d40511 100%); 
-        }
-
-        /* Botão Novo (Enviando) */
+        /* Botão: Enviando */
         .btn-enviando {
             background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
         }
 
-        /* Botão Power BI */
-        .btn-powerbi {
+        /* NOVO BOTÃO: Busca CEP */
+        .btn-cep {
+            background: linear-gradient(90deg, #2193b0 0%, #6dd5ed 100%);
+        }
+
+        /* NOVO BOTÃO: Correios (Reaproveitando o estilo amarelo) */
+        .btn-correios {
             background: linear-gradient(90deg, #F2C811 0%, #D49000 100%);
-            color: #333; /* Texto escuro para contrastar com o amarelo */
+            color: #333; 
         }
 
         hr { border: 0; border-top: 1px solid #eee; margin: 10px 0 20px 0; }
@@ -63,34 +63,36 @@
 
         <hr>
 
-        <label>Bling ou NF (DHL):</label>
-        <input type="text" id="info" placeholder="Ex: 12345" onkeypress="handleKeyPress(event, 'pedido')">
-        
-        <div class="btn-group">
-            <button class="btn-master" onclick="pesquisarTudo()">Rastrear Pedido DHL</button>
-        </div>
-
-        <hr>
-
         <label>Consultar CPF (Enviando):</label>
         <input type="text" id="cpfInfo" placeholder="Apenas números" onkeypress="handleKeyPress(event, 'cpf')">
 
-        <div class="btn-group" style="margin-bottom: 0;">
+        <div class="btn-group">
             <button class="btn-enviando" onclick="pesquisarEnviando()">Buscar no Enviando</button>
         </div>
 
         <hr>
 
-        <label>Power BI (Planilha DHL):</label>
-        <input type="text" id="pbiInfo" placeholder="Digite o número" onkeypress="handleKeyPress(event, 'powerbi')">
+        <!-- NOVA SESSÃO: Busca CEP -->
+        <label>Buscar CEP:</label>
+        <input type="text" id="cepInfo" placeholder="Ex: 60000000" onkeypress="handleKeyPress(event, 'cep')">
+
+        <div class="btn-group">
+            <button class="btn-cep" onclick="pesquisarCEP()">Buscar CEP</button>
+        </div>
+
+        <hr>
+
+        <!-- NOVA SESSÃO: Rastreio Correios -->
+        <label>Rastrear Correios:</label>
+        <input type="text" id="correiosInfo" placeholder="Ex: AB123456789BR" onkeypress="handleKeyPress(event, 'correios')">
 
         <div class="btn-group" style="margin-bottom: 0;">
-            <button class="btn-powerbi" onclick="pesquisarPowerBI()">Buscar na Planilha DHL</button>
+            <button class="btn-correios" onclick="pesquisarCorreios()">Rastrear Correios</button>
         </div>
     </div>
 
     <script>
-        // --- FUNÇÃO NOVA: Rastreio Instituto Hesed ---
+        // --- FUNÇÃO 1: Rastreio Instituto Hesed ---
         function pesquisarHesed() {
             const valor = document.getElementById('pedidoHesed').value.trim();
             
@@ -100,23 +102,6 @@
                 document.getElementById('pedidoHesed').value = ''; 
             } else {
                 alert("Por favor, digite o número do pedido.");
-            }
-        }
-
-        // --- FUNÇÃO 1: Rastreio DHL + Drive ---
-        function pesquisarTudo() {
-            const valor = document.getElementById('info').value.trim();
-            
-            if (valor) {
-                const urlNF = `https://drive.google.com/drive/search?q=${valor}`;
-                const urlRastreio = `https://mysctrackandtrace.dhl.com/order/public/detail?id=55002009OMS%2F${valor}-CID271068-BR_5111&indexType=CURRENT&country=BR&activeTab=orderHistory`;
-
-                window.open(urlNF, '_blank');
-                window.open(urlRastreio, '_blank');
-
-                document.getElementById('info').value = ''; 
-            } else {
-                alert("Por favor, digite o código do pedido (DHL/NF).");
             }
         }
 
@@ -130,28 +115,39 @@
                 const urlEnviando = `https://hesed.enviando.nordware.io/orders/search/?order=&order_source_number=&invoice_number=&order_status_alt=&order_priority=&account=&store=&shipping_type_id=&order_date_gte=&order_date_lte=&integrated_at_gte=&integrated_at_lte=&invoice_authorized_at_gte=&invoice_authorized_at_lte=&send_to_separate_gte=&send_to_separate_lte=&dispatch_at_gte=&dispatch_at_lte=&tracking_code=&shipping_name=&client_document=${cpf}&postal_code=&item_code=&item_gtin=&item_serial=&batch=`;
 
                 window.open(urlEnviando, '_blank');
-                
                 document.getElementById('cpfInfo').value = ''; 
             } else {
                 alert("Por favor, digite o CPF do cliente.");
             }
         }
 
-        // --- FUNÇÃO 3: Busca no Power BI (Google Sheets) ---
-        function pesquisarPowerBI() {
-            const valor = document.getElementById('pbiInfo').value.trim();
+        // --- FUNÇÃO 3: Busca CEP ---
+        function pesquisarCEP() {
+            let cep = document.getElementById('cepInfo').value.trim();
 
-            if (valor) {
-                const urlPlanilha = `https://docs.google.com/spreadsheets/d/1liP1pYvB4BsZ-J_DXnIWLHMOPeZ6jx24f_DjR7mking/edit?gid=1407160955#gid=1407160955`;
-
-                navigator.clipboard.writeText(valor).then(() => {
-                    alert(`Número ${valor} copiado! Ao abrir a planilha, aperte Ctrl+F e cole para achar a linha.`);
-                });
-
-                window.open(urlPlanilha, '_blank');
-                document.getElementById('pbiInfo').value = ''; 
+            if (cep) {
+                // Remove qualquer traço caso o usuário digite a pontuação
+                cep = cep.replace(/\D/g, '');
+                
+                const urlCEP = `https://www.siterastreio.com.br/cep/${cep}`;
+                window.open(urlCEP, '_blank');
+                document.getElementById('cepInfo').value = ''; 
             } else {
-                alert("Por favor, digite o número para buscar no Power BI/Planilha.");
+                alert("Por favor, digite o CEP.");
+            }
+        }
+
+        // --- FUNÇÃO 4: Rastreio Correios ---
+        function pesquisarCorreios() {
+            // Converte para maiúsculo para garantir o padrão de rastreio
+            const rastreio = document.getElementById('correiosInfo').value.trim().toUpperCase();
+
+            if (rastreio) {
+                const urlCorreios = `https://www.siterastreio.com.br/${rastreio}`;
+                window.open(urlCorreios, '_blank');
+                document.getElementById('correiosInfo').value = ''; 
+            } else {
+                alert("Por favor, digite o código de rastreio.");
             }
         }
 
@@ -159,13 +155,13 @@
         function handleKeyPress(e, tipo) {
             if (e.key === 'Enter') {
                 if (tipo === 'hesed') {
-                    pesquisarHesed(); // Aciona a busca do Hesed
-                } else if (tipo === 'pedido') {
-                    pesquisarTudo();
+                    pesquisarHesed(); 
                 } else if (tipo === 'cpf') {
                     pesquisarEnviando();
-                } else if (tipo === 'powerbi') {
-                    pesquisarPowerBI(); 
+                } else if (tipo === 'cep') {
+                    pesquisarCEP();
+                } else if (tipo === 'correios') {
+                    pesquisarCorreios();
                 }
             }
         }
